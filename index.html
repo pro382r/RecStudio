@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screen Recorder Pro</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Rec Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background-color: #000052;
+            background-image: url('Night_Desert.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
@@ -19,76 +21,116 @@
         .container {
             max-width: 800px;
             width: 100%;
-            background-color: #0c1232;
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.05); /* Lighter and more translucent */
+            padding: 3rem;
+            border-radius: 2rem;
+            backdrop-filter: blur(20px); /* Strong background blur */
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Frosted border */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
         #video-preview {
             width: 100%;
             height: auto;
             max-height: 500px;
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-            border: 2px solid #e5e7eb;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            /* Updated: 3pt wide border with transition for smooth color changes */
+            border: 3pt solid rgba(255, 255, 255, 1); 
             background-color: #000;
+            transition: border-color 0.3s ease;
         }
-        .btn {
-            padding: 0.75rem 2rem;
+        /* State Classes for Border Color */
+        .border-recording { border-color: #10b981 !important; } /* Green */
+        .border-paused { border-color: #ef4444 !important; }    /* Red */
+        .border-stopped { border-color: #ffffff !important; }   /* White */
+
+        .glass-btn {
+            padding: 0.85rem 2.5rem;
             border-radius: 9999px;
             font-weight: 600;
             color: white;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
             white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            border: 1px solid transparent;
         }
-        .btn:hover {
-            transform: translateY(-2px);
+        .glass-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
         }
-        .btn-green {
-            background-color: #10b981;
+        .glass-btn-green {
+            background-color: rgba(16, 185, 129, 0.85); /* Semi-translucent green */
+            border-color: rgba(16, 185, 129, 0.3);
         }
-        .btn-green:hover {
-            background-color: #059669;
+        .glass-btn-green:hover {
+            background-color: rgba(16, 185, 129, 1);
         }
-        .btn-red {
-            background-color: #ef4444;
+        .glass-btn-red {
+            background-color: rgba(239, 68, 68, 0.85); /* Semi-translucent red */
+            border-color: rgba(239, 68, 68, 0.3);
         }
-        .btn-red:hover {
-            background-color: #dc2626;
+        .glass-btn-red:hover {
+            background-color: rgba(239, 68, 68, 1);
         }
-        .btn-blue {
-            background-color: #3b82f6;
+        .glass-btn-blue {
+            background-color: rgba(59, 130, 246, 0.85); /* Semi-translucent blue */
+            border-color: rgba(59, 130, 246, 0.3);
         }
-        .btn-blue:hover {
-            background-color: #2563eb;
+        .glass-btn-blue:hover {
+            background-color: rgba(59, 130, 246, 1);
         }
-        .btn:disabled {
-            background-color: #a3a3a3;
+        .glass-btn:disabled {
+            background-color: rgba(163, 163, 163, 0.5); /* Semi-translucent gray for disabled */
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            color: rgba(255, 255, 255, 0.6);
         }
         .checkbox-container {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
         }
         .checkbox-group {
             display: flex;
             align-items: center;
+        }
+        .form-checkbox {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.25rem;
+            background-color: transparent;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-checkbox:checked {
+            background-color: #10b981; /* teal check */
+            border-color: #10b981;
+        }
+        .form-checkbox:checked::after {
+            content: '\2713';
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 class="text-4xl sm:text-8xl font-extrabold text-gray-900 mb-4" style="color: #2962ff;">
-            Recorder Studio
+        <h1 class="text-5xl sm:text-7xl font-extrabold mb-5" style="color: #2962ff;">
+            <b>Rec Studio</b>
         </h1>
-        <p class="text-lg text-gray-600 mb-8" style="color: #5aa389;">
+        <p class="text-xl sm:text-2xl text-gray-700 mb-10" style="color: #5aa389;">
             Capture your screen with audio. Best experience for <b>Chrome</b> browser. If you face any issue then refresh tab.
         </p>
 
@@ -96,39 +138,38 @@
 
         <div class="checkbox-container">
             <div class="checkbox-group">
-                <!-- Added 'checked' to enable by default -->
-                <input type="checkbox" id="systemAudioCheckbox" class="h-4 w-4 text-green-600 rounded" checked>
-                <label for="systemAudioCheckbox" class="ml-2 text-gray-700" style="color: #66ffde">System Audio</label>
+                <input type="checkbox" id="systemAudioCheckbox" class="form-checkbox" checked>
+                <label for="systemAudioCheckbox" class="ml-2.5 text-lg" style="color: #66ffde">System Audio</label>
             </div>
             <div class="checkbox-group">
-                <!-- Added 'checked' to enable by default -->
-                <input type="checkbox" id="micAudioCheckbox" class="h-4 w-4 text-green-600 rounded" checked>
-                <label for="micAudioCheckbox" class="ml-2 text-gray-700" style="color: #66ffde">Microphone</label>
+                <input type="checkbox" id="micAudioCheckbox" class="form-checkbox" checked>
+                <label for="micAudioCheckbox" class="ml-2.5 text-lg" style="color: #66ffde">Microphone</label>
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-            <button id="startButton" class="btn btn-green">
+        <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-10">
+            <button id="startButton" class="glass-btn glass-btn-green">
                 Start Recording
             </button>
-            <button id="pauseButton" class="btn btn-blue" disabled>
+            <button id="pauseButton" class="glass-btn glass-btn-blue" disabled>
                 Pause
             </button>
-            <button id="stopButton" class="btn btn-red" disabled>
-                Stop Recording
+            <button id="stopButton" class="glass-btn glass-btn-red" disabled>
+                Stop
             </button>
         </div>
 
-        <p id="status" class="text-sm font-medium text-gray-500 mb-4">
+        <p id="status" class="text-base font-medium text-white mb-6">
             Select audio options and click 'Start'.
         </p>
 
         <div id="download-area" class="mt-8 hidden">
-            <a id="download-link" href="#" download="my-screen-recording.webm" class="text-blue-600 underline text-lg font-semibold hover:text-blue-800">
+            <a id="download-link" href="#" download="my-screen-recording.webm" class="text-blue-400 underline text-lg font-semibold hover:text-blue-300">
                 Download Recording
             </a>
-            <p class="text-sm text-gray-500 mt-2">Your recording is ready for download.</p>
+            <p class="text-sm text-gray-300 mt-2">Your recording is ready for download.</p>
         </div>
+
     </div>
 
     <script>
@@ -148,7 +189,15 @@
         let audioContext;
         let micAudioTrack;
         let micStream;
-        let displayStream; // Keep track of screen capture stream
+        let displayStream;
+
+        // Helper to handle border color changes
+        const updateBorderColor = (state) => {
+            videoPreview.classList.remove('border-recording', 'border-paused', 'border-stopped');
+            if (state === 'recording') videoPreview.classList.add('border-recording');
+            if (state === 'paused') videoPreview.classList.add('border-paused');
+            if (state === 'stopped') videoPreview.classList.add('border-stopped');
+        };
 
         const startRecording = async () => {
             recordedChunks = [];
@@ -227,8 +276,8 @@
                     
                     downloadArea.classList.remove('hidden');
                     statusText.textContent = "Recording finished. You can preview and download your video below.";
-                    
-                    // Stop all tracks to clean up and hide the "Sharing screen" popup
+                    updateBorderColor('stopped'); // Set border to white on finish
+
                     if (stream) stream.getTracks().forEach(track => track.stop());
                     if (displayStream) displayStream.getTracks().forEach(track => track.stop());
                     if (micStream) micStream.getTracks().forEach(track => track.stop());
@@ -245,6 +294,7 @@
                 };
                 
                 mediaRecorder.start();
+                updateBorderColor('recording'); // Set border to green
                 
                 startButton.disabled = true;
                 pauseButton.disabled = false;
@@ -255,6 +305,7 @@
             } catch (err) {
                 console.error("Error accessing media devices:", err);
                 statusText.textContent = "Error: Could not start recording. Please check permissions.";
+                updateBorderColor('stopped');
                 
                 startButton.disabled = false;
                 pauseButton.disabled = true;
@@ -274,10 +325,12 @@
         const togglePauseResume = () => {
             if (mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.pause();
+                updateBorderColor('paused'); // Set border to red
                 pauseButton.textContent = 'Resume';
                 statusText.textContent = "Recording paused...";
             } else if (mediaRecorder && mediaRecorder.state === 'paused') {
                 mediaRecorder.resume();
+                updateBorderColor('recording'); // Back to green
                 pauseButton.textContent = 'Pause';
                 statusText.textContent = "Recording resumed...";
             }
@@ -286,8 +339,8 @@
         const stopRecording = () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
+                updateBorderColor('stopped'); // Set border to white
                 
-                // Force stopping all tracks immediately to remove the browser popup
                 if (stream) stream.getTracks().forEach(track => track.stop());
                 if (displayStream) displayStream.getTracks().forEach(track => track.stop());
                 if (micStream) micStream.getTracks().forEach(track => track.stop());
